@@ -1569,7 +1569,10 @@
     </main>
 
     <script>
-        const BACKEND_HOST = window.location.hostname || 'localhost';
+        // Default to localhost if hosted on a public domain, keeping local backend connection intact
+        const BACKEND_HOST = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? window.location.hostname
+            : 'localhost';
         const BASE_URL = `http://${BACKEND_HOST}:8081/api/orders`;
 
         // Predefined Yummy-style Indian Menu with descriptions, prep times, Veg/Non-Veg classifications
@@ -1742,6 +1745,17 @@
             const brokerStatusEl = document.querySelector('.broker-status');
             const statusDotEl = document.querySelector('.status-dot');
             const statusTextEl = brokerStatusEl.querySelector('span');
+
+            // Detect browser HTTPS Mixed Content security blocks for local backend connection
+            if (window.location.protocol === 'https:' && (BASE_URL.includes('localhost') || BASE_URL.includes('127.0.0.1'))) {
+                brokerStatusEl.style.backgroundColor = '#fff9e6';
+                brokerStatusEl.style.borderColor = '#ffeeba';
+                brokerStatusEl.style.color = '#856404';
+                statusDotEl.style.backgroundColor = '#ffc107';
+                statusDotEl.style.boxShadow = '0 0 8px #ffc107';
+                statusTextEl.innerHTML = 'HTTPS Security Block: Please use the local HTTP link (e.g. <a href="http://127.0.0.1:5500/standalone-dashboard.html" style="color: inherit; font-weight: 700; text-decoration: underline;">http://127.0.0.1:5500</a>) to connect';
+                return;
+            }
 
             try {
                 // Ping the order-service
