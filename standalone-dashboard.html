@@ -1572,7 +1572,13 @@
         // Smart host resolution
         const getBaseUrl = () => {
             const customUrl = localStorage.getItem('backend_api_url');
-            if (customUrl) return customUrl;
+            if (customUrl) {
+                if (customUrl.includes('.lhr.life')) {
+                    localStorage.removeItem('backend_api_url');
+                } else {
+                    return customUrl;
+                }
+            }
 
             const hostname = window.location.hostname;
             const isLocal = hostname === 'localhost' || 
@@ -1787,7 +1793,10 @@
                 // Ping the order-service
                 await fetch(`${BASE_URL}/health`, { 
                     method: 'GET',
-                    headers: { 'Bypass-Tunnel-Reminder': 'true' }
+                    headers: { 
+                        'Accept': 'application/json',
+                        'Bypass-Tunnel-Reminder': 'true' 
+                    }
                 });
                 checkConnectionFailures = 0;
                 // Connection succeeds
@@ -1958,6 +1967,7 @@
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json',
                         'Bypass-Tunnel-Reminder': 'true'
                     },
                     body: JSON.stringify(payload)
@@ -2017,7 +2027,10 @@
             if (!activeOrderId) return;
             try {
                 const response = await fetch(`${BASE_URL}/${activeOrderId}`, {
-                    headers: { 'Bypass-Tunnel-Reminder': 'true' }
+                    headers: { 
+                        'Accept': 'application/json',
+                        'Bypass-Tunnel-Reminder': 'true' 
+                    }
                 });
                 if (!response.ok) throw new Error('Status poll failed');
                 const data = await response.json();
@@ -2260,7 +2273,10 @@
                 if (!item.status || item.status === 'PENDING' || item.status === 'PAID' || item.status === 'PREPARING') {
                     try {
                         const res = await fetch(`${BASE_URL}/${item.id}`, {
-                            headers: { 'Bypass-Tunnel-Reminder': 'true' }
+                            headers: { 
+                                'Accept': 'application/json',
+                                'Bypass-Tunnel-Reminder': 'true' 
+                            }
                         });
                         if (res.ok) {
                             const details = await res.json();
