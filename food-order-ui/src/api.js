@@ -1,7 +1,13 @@
 const getBaseUrl = () => {
   if (typeof window !== 'undefined') {
     const customUrl = localStorage.getItem('backend_api_url');
-    if (customUrl) return customUrl;
+    if (customUrl) {
+      if (customUrl.includes('.lhr.life')) {
+        localStorage.removeItem('backend_api_url');
+      } else {
+        return customUrl;
+      }
+    }
   }
   if (typeof window === 'undefined') return 'http://localhost:8081/api/orders';
   const hostname = window.location.hostname;
@@ -13,11 +19,11 @@ const getBaseUrl = () => {
   if (isLocal) {
     return `http://${hostname}:8081/api/orders`;
   }
-  // Public HTTPS secure tunnel mapping to local PC backend
-  return 'https://fb3508d78696bd.lhr.life/api/orders';
+  // Public HTTPS secure tunnel mapping to local PC backend (stable subdomain)
+  return 'https://gourmetflow-backend-arul.loca.lt/api/orders';
 };
 export const BASE_URL = getBaseUrl();
-
+ 
 /**
  * Creates a new food order in the Order Service.
  * @param {Object} orderData - The order details (customerName, deliveryAddress, items)
@@ -29,6 +35,8 @@ export async function createOrder(orderData) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Bypass-Tunnel-Reminder': 'true',
       },
       body: JSON.stringify(orderData),
     });
@@ -56,6 +64,7 @@ export async function getOrderStatus(orderId) {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
+        'Bypass-Tunnel-Reminder': 'true',
       }
     });
 

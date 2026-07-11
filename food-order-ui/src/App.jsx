@@ -84,7 +84,12 @@ function App() {
       }
  
       try {
-        await fetch(`${BASE_URL}/health`)
+        await fetch(`${BASE_URL}/health`, {
+          headers: { 
+            'Accept': 'application/json',
+            'Bypass-Tunnel-Reminder': 'true' 
+          }
+        })
         setConnectionStatus('connected')
       } catch (e) {
         setConnectionStatus('offline')
