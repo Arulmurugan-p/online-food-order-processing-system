@@ -1370,7 +1370,7 @@
             </div>
         </div>
         <div class="header-meta">
-            <div class="broker-status">
+            <div class="broker-status" onclick="configureBackendUrl()" style="cursor: pointer;" title="Click to configure backend URL">
                 <div class="status-dot"></div>
                 <span>ActiveMQ JMS Broker Connected</span>
             </div>
@@ -1569,18 +1569,37 @@
     </main>
 
     <script>
-        // Default to localhost if hosted on a public domain, keeping local backend connection intact
-        const getBackendHost = () => {
+        // Smart host resolution
+        const getBaseUrl = () => {
+            const customUrl = localStorage.getItem('backend_api_url');
+            if (customUrl) return customUrl;
+
             const hostname = window.location.hostname;
             const isLocal = hostname === 'localhost' || 
                             hostname === '127.0.0.1' || 
                             /^192\.168\./.test(hostname) || 
                             /^10\./.test(hostname) || 
                             /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname);
-            return isLocal ? hostname : 'localhost';
+            if (isLocal) {
+                return `http://${hostname}:8081/api/orders`;
+            }
+            // Public HTTPS secure tunnel mapping to local PC backend
+            return 'https://fb3508d78696bd.lhr.life/api/orders';
         };
-        const BACKEND_HOST = getBackendHost();
-        const BASE_URL = `http://${BACKEND_HOST}:8081/api/orders`;
+        const BASE_URL = getBaseUrl();
+
+        function configureBackendUrl() {
+            const current = localStorage.getItem('backend_api_url') || BASE_URL;
+            const newUrl = prompt('Configure Backend API URL:\n(e.g., http://localhost:8081/api/orders or https://xxxx.lhr.life/api/orders)\n\nLeave empty to reset to default automatic resolution:', current);
+            if (newUrl !== null) {
+                if (newUrl.trim() === '') {
+                    localStorage.removeItem('backend_api_url');
+                } else {
+                    localStorage.setItem('backend_api_url', newUrl.trim());
+                }
+                window.location.reload();
+            }
+        }
 
         // Predefined Yummy-style Indian Menu with descriptions, prep times, Veg/Non-Veg classifications
         const MENU_ITEMS = [
@@ -1754,8 +1773,7 @@
             const statusTextEl = brokerStatusEl.querySelector('span');
 
             // Detect browser HTTPS Mixed Content security blocks for local backend connection
-            const host = BACKEND_HOST;
-            if (window.location.protocol === 'https:' && (host === 'localhost' || host === '127.0.0.1' || /^192\.168\./.test(host) || /^10\./.test(host) || /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host))) {
+            if (window.location.protocol === 'https:' && BASE_URL.startsWith('http://')) {
                 brokerStatusEl.style.backgroundColor = '#fff9e6';
                 brokerStatusEl.style.borderColor = '#ffeeba';
                 brokerStatusEl.style.color = '#856404';

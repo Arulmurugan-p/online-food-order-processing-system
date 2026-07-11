@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { createOrder, getOrderStatus } from './api'
+import { createOrder, getOrderStatus, BASE_URL } from './api'
 import { 
   ShoppingBag, 
   MapPin, 
@@ -31,6 +31,19 @@ const MENU_ITEMS = [
 ]
 
 function App() {
+  const configureBackendUrl = () => {
+    const current = localStorage.getItem('backend_api_url') || BASE_URL;
+    const newUrl = prompt('Configure Backend API URL:\n(e.g., http://localhost:8081/api/orders or https://xxxx.lhr.life/api/orders)\n\nLeave empty to reset to default automatic resolution:', current);
+    if (newUrl !== null) {
+      if (newUrl.trim() === '') {
+        localStorage.removeItem('backend_api_url');
+      } else {
+        localStorage.setItem('backend_api_url', newUrl.trim());
+      }
+      window.location.reload();
+    }
+  };
+
   // Order Form State
   const [customerName, setCustomerName] = useState('')
   const [deliveryAddress, setDeliveryAddress] = useState('')
@@ -64,25 +77,14 @@ function App() {
   // Dynamic Backend / ActiveMQ Connection Check
   useEffect(() => {
     const checkConnection = async () => {
-      const getBackendHost = () => {
-        if (typeof window === 'undefined') return 'localhost';
-        const hostname = window.location.hostname;
-        const isLocal = hostname === 'localhost' || 
-                        hostname === '127.0.0.1' || 
-                        /^192\.168\./.test(hostname) || 
-                        /^10\./.test(hostname) || 
-                        /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname);
-        return isLocal ? hostname : 'localhost';
-      };
-      const host = getBackendHost();
- 
-      if (window.location.protocol === 'https:' && (host === 'localhost' || host === '127.0.0.1' || /^192\.168\./.test(host) || /^10\./.test(host) || /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host))) {
+      // Detect browser HTTPS Mixed Content security blocks for local backend connection
+      if (window.location.protocol === 'https:' && BASE_URL.startsWith('http://')) {
         setConnectionStatus('mixed-content')
         return
       }
  
       try {
-        await fetch(`http://${host}:8081/api/orders/health`)
+        await fetch(`${BASE_URL}/health`)
         setConnectionStatus('connected')
       } catch (e) {
         setConnectionStatus('offline')
@@ -271,14 +273,18 @@ function App() {
             <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>Event-Driven Orchestrated Kitchen System</p>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div 
+          onClick={configureBackendUrl}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+          title="Click to configure backend URL"
+        >
           <Activity size={16} color={connectionStatus === 'connected' ? "#10b981" : connectionStatus === 'mixed-content' ? "#eab308" : "#f87171"} />
           <span style={{ fontSize: '0.85rem', color: connectionStatus === 'connected' ? "#10b981" : connectionStatus === 'mixed-content' ? "#eab308" : "#f87171", fontWeight: 600 }}>
             {connectionStatus === 'connected' && "ActiveMQ Connected"}
             {connectionStatus === 'offline' && "ActiveMQ Offline"}
             {connectionStatus === 'mixed-content' && (
               <span>
-                HTTPS Block: Use <a href="http://127.0.0.1:5500/standalone-dashboard.html" style={{ textDecoration: 'underline', color: 'inherit' }}>HTTP Link</a>
+                HTTPS Block: Use local HTTP (e.g. <a href="http://localhost:5173" style={{ textDecoration: 'underline', color: 'inherit' }}>Vite Link</a> or <a href="http://127.0.0.1:5500/standalone-dashboard.html" style={{ textDecoration: 'underline', color: 'inherit' }}>HTML Link</a>)
               </span>
             )}
           </span>

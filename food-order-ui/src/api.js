@@ -1,15 +1,22 @@
-const getBackendHost = () => {
-  if (typeof window === 'undefined') return 'localhost';
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    const customUrl = localStorage.getItem('backend_api_url');
+    if (customUrl) return customUrl;
+  }
+  if (typeof window === 'undefined') return 'http://localhost:8081/api/orders';
   const hostname = window.location.hostname;
   const isLocal = hostname === 'localhost' || 
                   hostname === '127.0.0.1' || 
                   /^192\.168\./.test(hostname) || 
                   /^10\./.test(hostname) || 
                   /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname);
-  return isLocal ? hostname : 'localhost';
+  if (isLocal) {
+    return `http://${hostname}:8081/api/orders`;
+  }
+  // Public HTTPS secure tunnel mapping to local PC backend
+  return 'https://fb3508d78696bd.lhr.life/api/orders';
 };
-const BACKEND_HOST = getBackendHost();
-const BASE_URL = `http://${BACKEND_HOST}:8081/api/orders`;
+export const BASE_URL = getBaseUrl();
 
 /**
  * Creates a new food order in the Order Service.
