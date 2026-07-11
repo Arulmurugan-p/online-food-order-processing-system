@@ -1,0 +1,58 @@
+# Java
+*.class
+*.bluej
+*.pgm
+*.classpath
+*.project
+*.settings/
+bin/
+tmp/
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.restore
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Spring Boot & Application logs
+logs/
+*.log
+*.log.*
+/logs/
+**/logs/
+**/target/
+
+# Node.js & React
+node_modules/
+/food-order-ui/node_modules/
+/food-order-ui/dist/
+/food-order-ui/build/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+
+# IDEs (IntelliJ, Eclipse, VS Code)
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.settings/
+.metadata/
+*.sublime-workspace
+*.sublime-project
+
+# Operating System files
+Thumbs.db
+desktop.ini
+.DS_Store
+*.tmp
+*.bak
+*.swp
