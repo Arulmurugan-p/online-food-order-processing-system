@@ -5,19 +5,18 @@ spring:
   application:
     name: order-service
   datasource:
-    url: jdbc:h2:mem:orderdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/food_order_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
 
 activemq:
   broker-url: tcp://localhost:61616
@@ -41,3 +40,22 @@ camunda:
       lastName: User
     filter:
       create: All Tasks
+
+# JWT configuration
+jwt:
+  secret: ${JWT_SECRET:food-order-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256-algorithm}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+# CORS configuration
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5500,http://127.0.0.1:5500,http://localhost:5173,http://127.0.0.1:5173,https://arulmurugan-p.github.io}
+
+# Saga simulation (disable for real manual workflow)
+saga:
+  simulation:
+    enabled: ${SAGA_SIMULATION_ENABLED:false}
+
+logging:
+  level:
+    com.foodorder: INFO
+    org.springframework.security: WARN

@@ -16,7 +16,10 @@ public class OrderResponse {
     private String deliveryAddress;
     private BigDecimal totalAmount;
     private String status;
+    private Long userId;
+    private String userEmail;
     private List<OrderItemResponse> items;
+    private List<StatusHistoryResponse> statusHistory;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GourmetFlow — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #ff6b35; --primary-glow: rgba(255,107,53,0.25);
+  --bg: #08080f; --card: rgba(255,255,255,0.04);
+  --card-hover: rgba(255,255,255,0.07);
+  --border: rgba(255,255,255,0.08);
+  --text: #f0f0f5; --text-muted: rgba(240,240,245,0.45);
+  --success: #00d48a; --warning: #ffd60a;
+  --danger: #ff4d6d; --info: #4ca3ff;
+  --purple: #9b5de5; --teal: #00c8c8;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+/* Sidebar */
+.sidebar{width:240px;min-height:100vh;background:rgba(10,10,18,0.95);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 16px;flex-shrink:0;position:fixed;top:0;left:0;bottom:0;z-index:100}
+.sidebar-logo{display:flex;align-items:center;gap:12px;padding:0 8px;margin-bottom:32px}
+.sidebar-logo .icon{width:44px;height:44px;background:linear-gradient(135deg,var(--primary),#ff9500);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 8px 20px var(--primary-glow)}
+.sidebar-logo h1{font-size:18px;font-weight:800;background:linear-gradient(135deg,#fff,rgba(255,255,255,0.7));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sidebar-logo small{display:block;font-size:10px;color:var(--text-muted);font-weight:500;letter-spacing:1px;text-transform:uppercase;-webkit-text-fill-color:rgba(240,240,245,0.45)}
+nav{flex:1}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:500;color:var(--text-muted);transition:0.2s;margin-bottom:4px;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--card-hover);color:var(--text)}
+.nav-item.active{background:rgba(255,107,53,0.15);color:var(--primary);font-weight:600}
+.nav-item .dot{width:7px;height:7px;border-radius:50%;background:var(--primary);margin-left:auto;animation:blink 2s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.sidebar-user{border-top:1px solid var(--border);padding-top:16px;margin-top:8px}
+.user-info{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px}
+.avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--primary),#ff9500);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.user-name{font-size:13px;font-weight:600;color:var(--text)}
+.user-role{font-size:11px;color:var(--primary);font-weight:600;letter-spacing:0.5px}
+.btn-logout{width:100%;margin-top:8px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.2);color:var(--danger);border-radius:8px;padding:8px;font-size:13px;font-weight:600;cursor:pointer;transition:0.2s;font-family:inherit}
+.btn-logout:hover{background:rgba(255,77,109,0.2)}
+/* Main */
+.main{flex:1;margin-left:240px;padding:28px 32px;min-height:100vh;max-width:calc(100vw - 240px)}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.page-title h2{font-size:24px;font-weight:800}
+.page-title p{font-size:13px;color:var(--text-muted);margin-top:3px}
+.header-actions{display:flex;align-items:center;gap:12px}
+.badge-live{background:rgba(0,212,138,0.15);border:1px solid rgba(0,212,138,0.3);color:var(--success);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+.badge-live::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--success);animation:blink 2s ease infinite}
+.btn-refresh{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:0.2s;font-family:inherit}
+.btn-refresh:hover{background:var(--card-hover)}
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:28px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;transition:0.3s;cursor:default;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0}
+.stat-card.orange::before{background:linear-gradient(90deg,var(--primary),#ff9500)}
+.stat-card.green::before{background:linear-gradient(90deg,var(--success),#00b4d8)}
+.stat-card.yellow::before{background:linear-gradient(90deg,var(--warning),var(--primary))}
+.stat-card.red::before{background:linear-gradient(90deg,var(--danger),#ff8500)}
+.stat-card.purple::before{background:linear-gradient(90deg,var(--purple),#4ca3ff)}
+.stat-card.teal::before{background:linear-gradient(90deg,var(--teal),var(--success))}
+.stat-card:hover{background:var(--card-hover);transform:translateY(-2px)}
+.stat-icon{font-size:24px;margin-bottom:12px}
+.stat-value{font-size:28px;font-weight:800;letter-spacing:-1px}
+.stat-label{font-size:12px;color:var(--text-muted);font-weight:500;margin-top:4px}
+/* Table section */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{font-size:17px;font-weight:700}
+.search-wrap{position:relative}
+.search-wrap input{background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:9px 16px 9px 38px;font-size:13px;font-family:inherit;outline:none;width:220px;transition:0.2s}
+.search-wrap input:focus{border-color:var(--primary);background:rgba(255,107,53,0.06)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none}
+/* Table */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead tr{background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border)}
+th{padding:13px 16px;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;text-align:left}
+tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);transition:0.2s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--card-hover)}
+td{padding:14px 16px;font-size:13px;vertical-align:middle}
+.order-id{font-weight:700;color:var(--primary)}
+.customer{font-weight:600}
+.amount{font-weight:700}
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase}
+.status-PENDING{background:rgba(255,214,10,0.15);color:var(--warning)}
+.status-APPROVED{background:rgba(76,163,255,0.15);color:var(--info)}
+.status-PAYMENT_VERIFIED{background:rgba(155,93,229,0.15);color:var(--purple)}
+.status-COOKING{background:rgba(255,107,53,0.15);color:var(--primary)}
+.status-READY{background:rgba(0,200,200,0.15);color:var(--teal)}
+.status-OUT_FOR_DELIVERY{background:rgba(0,212,138,0.15);color:var(--success)}
+.status-DELIVERED{background:rgba(0,212,138,0.2);color:var(--success)}
+.status-REJECTED{background:rgba(255,77,109,0.15);color:var(--danger)}
+.status-CANCELLED{background:rgba(255,77,109,0.15);color:var(--danger)}
+/* Action buttons */
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.btn-action{border:none;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;transition:0.2s;font-family:inherit;letter-spacing:0.2px}
+.btn-action:hover{transform:translateY(-1px)}
+.btn-approve{background:rgba(76,163,255,0.15);color:var(--info);border:1px solid rgba(76,163,255,0.25)}
+.btn-approve:hover{background:rgba(76,163,255,0.25)}
+.btn-reject{background:rgba(255,77,109,0.12);color:var(--danger);border:1px solid rgba(255,77,109,0.25)}
+.btn-reject:hover{background:rgba(255,77,109,0.22)}
+.btn-pay{background:rgba(155,93,229,0.15);color:var(--purple);border:1px solid rgba(155,93,229,0.25)}
+.btn-pay:hover{background:rgba(155,93,229,0.25)}
+.btn-cook{background:rgba(255,107,53,0.15);color:var(--primary);border:1px solid rgba(255,107,53,0.25)}
+.btn-cook:hover{background:rgba(255,107,53,0.25)}
+.btn-ready{background:rgba(0,200,200,0.12);color:var(--teal);border:1px solid rgba(0,200,200,0.25)}
+.btn-ready:hover{background:rgba(0,200,200,0.22)}
+.btn-deliver{background:rgba(0,212,138,0.12);color:var(--success);border:1px solid rgba(0,212,138,0.25)}
+.btn-deliver:hover{background:rgba(0,212,138,0.22)}
+.btn-done{background:rgba(0,212,138,0.18);color:var(--success);border:1px solid rgba(0,212,138,0.3)}
+/* Loading */
+.loading{text-align:center;padding:48px;color:var(--text-muted)}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Toast */
+#toast{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px}
+.toast-item{padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;min-width:260px;max-width:340px;animation:toastIn 0.3s;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,0.4)}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.toast-success{background:rgba(0,212,138,0.95);color:#001a10}
+.toast-error{background:rgba(255,77,109,0.95);color:#fff}
+.toast-info{background:rgba(255,107,53,0.95);color:#fff}
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#111118;border:1px solid var(--border);border-radius:20px;padding:32px;width:min(580px,95vw);max-height:90vh;overflow-y:auto}
+.modal h3{font-size:18px;font-weight:700;margin-bottom:20px}
+.modal-close{float:right;background:var(--card);border:none;color:var(--text);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:16px}
+.detail-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.detail-item label{font-size:10px;color:var(--text-muted);font-weight:700;letter-spacing:0.8px;text-transform:uppercase;display:block;margin-bottom:4px}
+.detail-item p{font-size:14px;font-weight:500}
+.history-list{margin-top:16px}
+.history-list h4{font-size:13px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px}
+.history-item{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)}
+.history-item:last-child{border-bottom:none}
+.history-dot{width:10px;height:10px;border-radius:50%;background:var(--primary);flex-shrink:0}
+.history-status{font-size:13px;font-weight:600;flex:1}
+.history-meta{font-size:11px;color:var(--text-muted)}
+/* Empty */
+.empty{text-align:center;padding:56px;color:var(--text-muted)}
+.empty .icon{font-size:48px;margin-bottom:12px}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="icon">🍽️</div>
+    <div>
+      <h1>GourmetFlow</h1>
+      <small>Admin Portal</small>
+    </div>
+  </div>
+
+  <nav>
+    <button class="nav-item active" onclick="showSection('orders')">📋 All Orders <span class="dot" id="pendingDot" style="display:none"></span></button>
+    <button class="nav-item" onclick="showSection('stats')">📊 Analytics</button>
+  </nav>
+
+  <div class="sidebar-user">
+    <div class="user-info">
+      <div class="avatar" id="avatarEl">A</div>
+      <div>
+        <div class="user-name" id="userNameEl">Admin</div>
+        <div class="user-role">ADMINISTRATOR</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">🚪 Sign Out</button>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-title">
+      <h2>Order Management</h2>
+      <p>Real-time food order workflow control center</p>
+    </div>
+    <div class="header-actions">
+      <span class="badge-live">Live</span>
+      <button class="btn-refresh" onclick="loadOrders()" id="refreshBtn">🔄 Refresh</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card orange"><div class="stat-icon">📦</div><div class="stat-value" id="sTotalOrders">—</div><div class="stat-label">Total Orders</div></div>
+    <div class="stat-card yellow"><div class="stat-icon">⏳</div><div class="stat-value" id="sPending">—</div><div class="stat-label">Pending</div></div>
+    <div class="stat-card orange"><div class="stat-icon">🍳</div><div class="stat-value" id="sCooking">—</div><div class="stat-label">Cooking</div></div>
+    <div class="stat-card teal"><div class="stat-icon">🚴</div><div class="stat-value" id="sDelivery">—</div><div class="stat-label">Out for Delivery</div></div>
+    <div class="stat-card green"><div class="stat-icon">✅</div><div class="stat-value" id="sDelivered">—</div><div class="stat-label">Delivered</div></div>
+    <div class="stat-card purple"><div class="stat-icon">💰</div><div class="stat-value" id="sRevenue">—</div><div class="stat-label">Revenue</div></div>
+  </div>
+
+  <!-- Orders Table -->
+  <div class="section-header">
+    <span class="section-title">📋 All Orders</span>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search orders..." oninput="filterOrders()">
+    </div>
+  </div>
+
+  <div class="table-wrap" id="tableWrap">
+    <div class="loading"><div class="spinner"></div><p>Loading orders...</p></div>
+  </div>
+</main>
+
+<!-- Order Detail Modal -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3>Order Details</h3>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+const API = (() => {
+  const stored = localStorage.getItem('gf_backend_url');
+  return (stored && !stored.includes('.lhr.life')) ? stored : 'https://gourmetflow-backend-arul.loca.lt';
+})();
+
+let allOrders = [];
+let refreshInterval;
+
+// ── Auth ─────────────────────────────────────────────────────────────────────
+function getToken() { return localStorage.getItem('gf_token'); }
+function authHeaders() {
+  return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` };
+}
+
+function checkAuth() {
+  const token = getToken();
+  const user = localStorage.getItem('gf_user');
+  if (!token || !user) { window.location.href = 'login.html'; return; }
+  try {
+    const u = JSON.parse(user);
+    if (!u.roles || !u.roles.includes('ROLE_ADMIN')) {
+      window.location.href = 'user-dashboard.html';
+      return;
+    }
+    document.getElementById('userNameEl').textContent = u.fullName || u.email;
+    document.getElementById('avatarEl').textContent = (u.fullName || 'A').charAt(0).toUpperCase();
+  } catch(_) { window.location.href = 'login.html'; }
+}
+
+function logout() {
+  localStorage.removeItem('gf_token');
+  localStorage.removeItem('gf_user');
+  window.location.href = 'login.html';
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function toast(msg, type = 'info') {
+  const container = document.getElementById('toast');
+  const el = document.createElement('div');
+  el.className = `toast-item toast-${type}`;
+  el.innerHTML = `<span>${type==='success'?'✅':type==='error'?'❌':'ℹ️'}</span>${msg}`;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const res = await fetch(`${API}/api/orders/stats`, { headers: authHeaders() });
+    if (!res.ok) return;
+    const d = await res.json();
+    document.getElementById('sTotalOrders').textContent = d.totalOrders ?? '—';
+    document.getElementById('sPending').textContent = d.pendingOrders ?? '—';
+    document.getElementById('sCooking').textContent = d.cookingOrders ?? '—';
+    document.getElementById('sDelivery').textContent = d.outForDelivery ?? '—';
+    document.getElementById('sDelivered').textContent = d.deliveredOrders ?? '—';
+    const rev = d.totalRevenue ? `₹${parseFloat(d.totalRevenue).toLocaleString('en-IN')}` : '₹0';
+    document.getElementById('sRevenue').textContent = rev;
+    const dot = document.getElementById('pendingDot');
+    if (d.pendingOrders > 0) { dot.style.display = 'block'; } else { dot.style.display = 'none'; }
+  } catch(_) {}
+}
+
+// ── Orders ────────────────────────────────────────────────────────────────────
+async function loadOrders() {
+  const btn = document.getElementById('refreshBtn');
+  btn.innerHTML = '⏳ Loading...';
+  btn.disabled = true;
+  try {
+    const res = await fetch(`${API}/api/orders?size=100`, { headers: authHeaders() });
+    if (res.status === 401 || res.status === 403) { logout(); return; }
+    if (!res.ok) throw new Error('Server error');
+    const data = await res.json();
+    allOrders = data.content || [];
+    renderOrders(allOrders);
+    await loadStats();
+  } catch(err) {
+    document.getElementById('tableWrap').innerHTML =
+      `<div class="empty"><div class="icon">🔌</div><p>Cannot reach backend. Is it running?</p></div>`;
+    toast('Failed to load orders: ' + err.message, 'error');
+  }
+  btn.innerHTML = '🔄 Refresh';
+  btn.disabled = false;
+}
+
+function filterOrders() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = allOrders.filter(o =>
+    String(o.id).includes(q) ||
+    (o.customerName || '').toLowerCase().includes(q) ||
+    (o.userEmail || '').toLowerCase().includes(q) ||
+    (o.status || '').toLowerCase().includes(q)
+  );
+  renderOrders(filtered);
+}
+
+function renderOrders(orders) {
+  const wrap = document.getElementById('tableWrap');
+  if (!orders.length) {
+    wrap.innerHTML = `<div class="empty"><div class="icon">📭</div><p>No orders found</p></div>`;
+    return;
+  }
+  const rows = orders.map(o => `
+    <tr>
+      <td><span class="order-id">#${o.id}</span></td>
+      <td><span class="customer">${o.customerName}</span><br><small style="color:var(--text-muted);font-size:11px">${o.userEmail||'Guest'}</small></td>
+      <td class="amount">₹${parseFloat(o.totalAmount).toLocaleString('en-IN')}</td>
+      <td><span class="status-badge status-${o.status}">${statusLabel(o.status)}</span></td>
+      <td><small style="color:var(--text-muted)">${formatDate(o.createdAt)}</small></td>
+      <td>
+        <div class="actions">
+          ${buildActions(o)}
+          <button class="btn-action" style="background:rgba(255,255,255,0.06);border:1px solid var(--border)" onclick="viewDetail(${o.id})">👁 Details</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  wrap.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Time</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+function buildActions(o) {
+  const s = o.status;
+  if (s === 'PENDING') return `
+    <button class="btn-action btn-approve" onclick="updateStatus(${o.id},'approve')">✅ Approve</button>
+    <button class="btn-action btn-reject" onclick="updateStatus(${o.id},'reject')">❌ Reject</button>`;
+  if (s === 'APPROVED') return `<button class="btn-action btn-pay" onclick="updateStatus(${o.id},'verify-payment')">💳 Verify Payment</button>`;
+  if (s === 'PAYMENT_VERIFIED') return `<button class="btn-action btn-cook" onclick="updateStatus(${o.id},'start-cooking')">🍳 Start Cooking</button>`;
+  if (s === 'COOKING') return `<button class="btn-action btn-ready" onclick="updateStatus(${o.id},'food-ready')">🍱 Food Ready</button>`;
+  if (s === 'READY') return `<button class="btn-action btn-deliver" onclick="updateStatus(${o.id},'start-delivery')">🚴 Start Delivery</button>`;
+  if (s === 'OUT_FOR_DELIVERY') return `<button class="btn-action btn-done" onclick="updateStatus(${o.id},'deliver')">✅ Mark Delivered</button>`;
+  return `<span style="color:var(--text-muted);font-size:11px">—</span>`;
+}
+
+async function updateStatus(orderId, action) {
+  try {
+    const res = await fetch(`${API}/api/orders/${orderId}/${action}`, {
+      method: 'PUT', headers: authHeaders()
+    });
+    if (!res.ok) {
+      const d = await res.json().catch(()=>({}));
+      throw new Error(d.message || `Action failed (${res.status})`);
+    }
+    const updated = await res.json();
+    allOrders = allOrders.map(o => o.id === orderId ? updated : o);
+    renderOrders(allOrders);
+    await loadStats();
+    toast(`Order #${orderId} → ${statusLabel(updated.status)}`, 'success');
+  } catch(err) {
+    toast(`Error: ${err.message}`, 'error');
+  }
+}
+
+async function viewDetail(orderId) {
+  const order = allOrders.find(o => o.id === orderId);
+  if (!order) return;
+  const historyHtml = (order.statusHistory || []).map(h => `
+    <div class="history-item">
+      <div class="history-dot"></div>
+      <div class="history-status">${statusLabel(h.status)}</div>
+      <div class="history-meta">${h.updatedBy} · ${formatDate(h.timestamp)}</div>
+    </div>
+  `).join('') || '<p style="color:var(--text-muted);font-size:13px">No history recorded</p>';
+
+  const itemsHtml = (order.items || []).map(i =>
+    `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px">
+      <span>${i.itemName} × ${i.quantity}</span>
+      <span style="font-weight:600">₹${(i.price * i.quantity).toFixed(2)}</span>
+    </div>`).join('');
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="detail-row">
+      <div class="detail-item"><label>Order ID</label><p>#${order.id}</p></div>
+      <div class="detail-item"><label>Status</label><p><span class="status-badge status-${order.status}">${statusLabel(order.status)}</span></p></div>
+      <div class="detail-item"><label>Customer</label><p>${order.customerName}</p></div>
+      <div class="detail-item"><label>Email</label><p>${order.userEmail||'Guest'}</p></div>
+      <div class="detail-item"><label>Delivery Address</label><p>${order.deliveryAddress}</p></div>
+      <div class="detail-item"><label>Total Amount</label><p style="font-size:18px;font-weight:800;color:var(--primary)">₹${parseFloat(order.totalAmount).toLocaleString('en-IN')}</p></div>
+    </div>
+    <div style="margin-bottom:16px"><h4 style="font-size:12px;color:var(--text-muted);font-weight:700;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:10px">Items</h4>${itemsHtml}</div>
+    <div class="history-list"><h4>Status History</h4>${historyHtml}</div>
+  `;
+  document.getElementById('detailModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('detailModal').classList.remove('open');
+}
+
+document.getElementById('detailModal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function statusLabel(s) {
+  const map = {
+    PENDING:'⏳ Pending', APPROVED:'✅ Approved', PAYMENT_VERIFIED:'💳 Payment Verified',
+    COOKING:'🍳 Cooking', READY:'🍱 Food Ready', OUT_FOR_DELIVERY:'🚴 On the Way',
+    DELIVERED:'✅ Delivered', REJECTED:'❌ Rejected', CANCELLED:'🚫 Cancelled'
+  };
+  return map[s] || s;
+}
+
+function formatDate(dt) {
+  if (!dt) return '—';
+  return new Date(dt).toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+}
+
+function showSection(section) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+checkAuth();
+loadOrders();
+refreshInterval = setInterval(loadOrders, 30000); // Auto refresh every 30s
+</script>
+</body>
+</html>

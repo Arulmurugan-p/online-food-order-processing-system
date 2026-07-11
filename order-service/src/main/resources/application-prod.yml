@@ -8,18 +8,15 @@ spring:
   application:
     name: order-service
   datasource:
-    url: jdbc:h2:mem:orderdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-  h2:
-    console:
-      enabled: false   # Disable H2 console in production
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/food_order_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
-    show-sql: false    # Quieter logs in production
+    show-sql: false
 
 # ActiveMQ still embedded — used for internal messaging if needed
 activemq:
