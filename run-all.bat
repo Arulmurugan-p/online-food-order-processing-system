@@ -1,0 +1,23 @@
+@echo off
+echo Starting Online Food Order Processing System...
+
+echo Starting Order Service & ActiveMQ...
+start "Order Service" java -jar order-service/target/order-service-1.0.0-SNAPSHOT.jar
+
+echo Waiting for ActiveMQ to initialize...
+timeout /t 8 /nobreak > NUL
+
+echo Starting Payment Service...
+start "Payment Service" java -jar payment-service/target/payment-service-1.0.0-SNAPSHOT.jar
+
+echo Starting Kitchen Service...
+start "Kitchen Service" java -jar kitchen-service/target/kitchen-service-1.0.0-SNAPSHOT.jar
+
+echo Starting Delivery Service...
+start "Delivery Service" java -jar delivery-service/target/delivery-service-1.0.0-SNAPSHOT.jar
+
+echo Starting React UI...
+cd food-order-ui && start "React UI" npm run dev
+
+echo All services are launching!
+pause

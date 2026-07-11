@@ -1,0 +1,2183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GourmetFlow Delivery</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Okra:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #e8ebf0;
+            --text-main: #1c1c1c;
+            --text-secondary: #696969;
+            --text-muted: #9c9c9c;
+            --brand-color: #e23744;
+            /* Brand Crimson */
+            --brand-hover: #cb202d;
+            --brand-glow: rgba(226, 55, 68, 0.1);
+            --color-success: #24963f;
+            /* Delivery Green */
+            --color-success-bg: rgba(36, 150, 63, 0.08);
+            --color-warning: #f5a623;
+            --color-info: #2d88ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Okra', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Top Navigation Header */
+        header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 14px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(28, 28, 28, 0.03);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .logo-icon-wrapper {
+            background-color: var(--brand-color);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(226, 55, 68, 0.2);
+        }
+
+        .logo-text h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--brand-color);
+            letter-spacing: -0.04em;
+        }
+
+        .logo-text p {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-top: -1px;
+        }
+
+        .header-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .broker-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #e8f7ec;
+            border: 1px solid #d0ebd6;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            color: var(--color-success);
+            font-weight: 700;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background-color: var(--color-success);
+            box-shadow: 0 0 8px var(--color-success);
+            animation: pulse-dot 1.8s infinite alternate;
+        }
+
+        @keyframes pulse-dot {
+            0% {
+                opacity: 0.4;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Container Grid */
+        main {
+            flex: 1;
+            padding: 30px 40px 60px 40px;
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 32px;
+            max-width: 1360px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1024px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section-left,
+        .section-right {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* Custom Cards */
+        .delivery-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 26px;
+            box-shadow: 0 4px 18px rgba(28, 28, 28, 0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .delivery-card:hover {
+            box-shadow: 0 6px 24px rgba(28, 28, 28, 0.05);
+        }
+
+        h2.section-header {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Form Inputs */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 640px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 14px 13px 40px;
+            background-color: #fafbfc;
+            border: 1px solid #e0e4eb;
+            border-radius: 12px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--brand-color);
+            box-shadow: 0 0 0 3px rgba(226, 55, 68, 0.1);
+            background-color: #ffffff;
+        }
+
+        /* Yummy-style Food Catalog Grid */
+        .menu-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 18px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 10px;
+        }
+
+        .food-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f3f7;
+            padding-bottom: 18px;
+            margin-bottom: 6px;
+        }
+
+        .food-card:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .food-info {
+            flex: 1;
+            padding-right: 20px;
+        }
+
+        .food-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid #24963f;
+            width: 14px;
+            height: 14px;
+            padding: 1px;
+            border-radius: 3px;
+            margin-bottom: 8px;
+        }
+
+        .food-badge-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #24963f;
+            border-radius: 50%;
+        }
+
+        .food-badge.non-veg {
+            border-color: #c83838;
+        }
+
+        .food-badge.non-veg .food-badge-dot {
+            background-color: #c83838;
+        }
+
+        .food-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .food-price {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #2b2b2b;
+            margin-bottom: 6px;
+        }
+
+        .food-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 6px;
+        }
+
+        .rating-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            background-color: #f3f8f4;
+            color: #24963f;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            border: 1px solid #d4edd9;
+        }
+
+        .food-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .food-description {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.45;
+            margin-top: 6px;
+            max-width: 480px;
+        }
+
+        /* Appetizing Photo / Button Side */
+        .food-action-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            width: 110px;
+        }
+
+        .food-thumbnail {
+            width: 100px;
+            height: 100px;
+            border-radius: 12px;
+            object-fit: cover;
+            background-color: #f1f3f7;
+            border: 1px solid var(--border-color);
+        }
+
+        .add-action-btn {
+            background-color: #ffffff;
+            border: 1px solid #e0e4eb;
+            color: var(--brand-color);
+            font-size: 0.85rem;
+            font-weight: 800;
+            padding: 8px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            position: absolute;
+            bottom: -10px;
+            outline: none;
+        }
+
+        .add-action-btn:hover {
+            background-color: #fff5f5;
+            border-color: #ffcccc;
+            box-shadow: 0 4px 12px rgba(226, 55, 68, 0.12);
+        }
+
+        /* Cart & Checkout Panel */
+        .cart-panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 4px 18px rgba(28, 28, 28, 0.01);
+        }
+
+        .cart-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.88rem;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #f0f2f5;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .cart-item-title-side {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .cart-item-qty-selector {
+            display: flex;
+            align-items: center;
+            background-color: #fff4f4;
+            border: 1.5px solid #ffdede;
+            border-radius: 8px;
+            padding: 3px 10px;
+            gap: 12px;
+        }
+
+        .cart-qty-btn {
+            background: none;
+            border: none;
+            color: var(--brand-color);
+            font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-qty-val {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .cart-item-price-side {
+            width: 80px;
+            text-align: right;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Bill Details */
+        .bill-details {
+            background-color: #fafbfc;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 22px;
+            border: 1px solid var(--border-color);
+        }
+
+        .bill-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            letter-spacing: 0.05em;
+        }
+
+        .bill-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .bill-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .bill-row.grand-total {
+            border-top: 1px solid #eef1f5;
+            margin-top: 10px;
+            padding-top: 12px;
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .grand-total-val {
+            color: var(--brand-color);
+            font-size: 1.15rem;
+        }
+
+        .grand-total-val.limit-failed {
+            color: #d82c2c;
+        }
+
+        .limit-alert-banner {
+            background-color: #fff0f0;
+            border: 1px solid #ffcccc;
+            color: #c83838;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            line-height: 1.35;
+        }
+
+        /* Brand Action Button */
+        button.checkout-btn {
+            width: 100%;
+            background-color: var(--brand-color);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            padding: 16px;
+            font-size: 0.98rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(226, 55, 68, 0.25);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button.checkout-btn:hover:not(:disabled) {
+            background-color: var(--brand-hover);
+            box-shadow: 0 6px 18px rgba(226, 55, 68, 0.35);
+        }
+
+        button.checkout-btn:disabled {
+            background-color: #dedede;
+            color: #8c8c8c;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            background-color: #f5f7fa;
+            border: 1.5px solid #cbd2d9;
+            border-radius: 12px;
+            color: #486581;
+            padding: 14px 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 15px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e4e7eb;
+            color: #102a43;
+            border-color: #9fb3c8;
+        }
+
+        /* Order Tracking Section */
+        .tracker-card {
+            flex: 1;
+            min-height: 480px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .empty-tracker {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-tracker-svg {
+            color: var(--text-muted);
+            opacity: 0.4;
+            margin-bottom: 20px;
+            animation: bounce-slow 4s infinite alternate;
+        }
+
+        @keyframes bounce-slow {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .empty-tracker h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .empty-tracker p {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            max-width: 260px;
+            line-height: 1.4;
+        }
+
+        /* Active Tracker UI */
+        .active-tracker {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .tracker-header-box {
+            background-color: #fafbfc;
+            border: 1px solid var(--border-color);
+            padding: 16px 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tracker-ref-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .tracker-order-id {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-top: 2px;
+        }
+
+        .tracker-customer-name {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-badge {
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 5px 12px;
+            border-radius: 30px;
+            letter-spacing: 0.05em;
+        }
+
+        .status-badge.badge-pending {
+            background-color: #fff9e6;
+            color: #d48300;
+            border: 1.5px solid #ffe9b3;
+        }
+
+        .status-badge.badge-paid {
+            background-color: #e6f0ff;
+            color: #0056cc;
+            border: 1.5px solid #b3d1ff;
+        }
+
+        .status-badge.badge-preparing {
+            background-color: #f0e6ff;
+            color: #6b00b3;
+            border: 1.5px solid #d1b3ff;
+        }
+
+        .status-badge.badge-delivered {
+            background-color: #e8f7ec;
+            color: var(--color-success);
+            border: 1.5px solid #ccebd2;
+        }
+
+        .status-badge.badge-cancelled {
+            background-color: #fff2f2;
+            color: #d93838;
+            border: 1.5px solid #ffd1d1;
+        }
+
+        /* Timeline tracker stepper */
+        .tracker-stepper {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            padding-left: 8px;
+        }
+
+        .timeline-step {
+            display: flex;
+            gap: 16px;
+            position: relative;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 17px;
+            top: 34px;
+            bottom: -24px;
+            width: 2px;
+            background-color: #e2e5eb;
+            transition: background-color 0.4s ease;
+            overflow: hidden;
+        }
+
+        .timeline-line.completed {
+            background-color: var(--color-success);
+        }
+
+        .timeline-line.active-transit {
+            background-color: #e2e5eb;
+        }
+
+        .timeline-line.active-transit::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--color-success) 0%, var(--brand-color) 50%, #e2e5eb 100%);
+            background-size: 100% 200%;
+            animation: flow-line-grad 1.5s infinite linear;
+        }
+
+        @keyframes flow-line-grad {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        .timeline-step:last-child .timeline-line {
+            display: none;
+        }
+
+        .step-bubble {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .bubble-waiting {
+            background-color: #f0f2f5;
+            border: 2px solid #cbd2d9;
+            color: #7b8794;
+        }
+
+        .bubble-active {
+            background-color: #fff3f3;
+            border: 2.5px solid var(--brand-color);
+            color: var(--brand-color);
+            box-shadow: 0 0 14px rgba(226, 55, 68, 0.25);
+            animation: pulse-bubble 1.5s infinite alternate;
+        }
+
+        /* Active Step Icon Animations */
+        .bubble-active .step-icon-pending {
+            animation: bounce-svg 1.2s infinite alternate ease-in-out;
+        }
+
+        .bubble-active .step-icon-paid {
+            animation: tilt-card 1.5s infinite alternate ease-in-out;
+        }
+
+        .bubble-active .step-icon-preparing {
+            animation: float-cooking 1.6s infinite alternate ease-in-out;
+        }
+
+        .bubble-active .step-icon-delivered {
+            animation: drive-vehicle 0.8s infinite alternate ease-in-out;
+        }
+
+        @keyframes bounce-svg {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-3px); }
+        }
+
+        @keyframes tilt-card {
+            0% { transform: rotate(-8deg); }
+            100% { transform: rotate(8deg); }
+        }
+
+        @keyframes float-cooking {
+            0% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-3px) scale(1.05); }
+            100% { transform: translateY(0) scale(1); }
+        }
+
+        @keyframes drive-vehicle {
+            0% { transform: translateX(-2px); }
+            100% { transform: translateX(2px); }
+        }
+
+        @keyframes pulse-bubble {
+            0% {
+                transform: scale(1.01);
+            }
+
+            100% {
+                transform: scale(1.06);
+            }
+        }
+
+        .bubble-completed {
+            background-color: #e8f7ec;
+            border: 2.5px solid var(--color-success);
+            color: var(--color-success);
+        }
+
+        .bubble-cancelled {
+            background-color: #fff2f2;
+            border: 2.5px solid #d93838;
+            color: #d93838;
+        }
+
+        .step-details {
+            padding-top: 6px;
+        }
+
+        .step-details h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .step-details p {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        /* Rollback banner */
+        .saga-rollback-banner {
+            background-color: #fff5f5;
+            border: 1px solid #ffd2d2;
+            border-radius: 12px;
+            padding: 16px;
+            color: #b52a2a;
+            font-size: 0.78rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            line-height: 1.45;
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-4px);
+            }
+
+            75% {
+                transform: translateX(4px);
+            }
+        }
+
+        .saga-rollback-header {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #901c1c;
+            font-size: 0.82rem;
+        }
+
+        /* Recent Orders */
+        .history-card {
+            padding: 20px;
+        }
+
+        .history-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            letter-spacing: 0.05em;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .history-item:hover {
+            border-color: #cbd5e1;
+            transform: translateX(2px);
+        }
+
+        .history-item.active {
+            border-color: var(--brand-color);
+            background-color: #fff9f9;
+        }
+
+        .history-item-info h5 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .history-item-info p {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            margin-top: 3px;
+        }
+
+        .history-chevron {
+            color: var(--text-muted);
+            font-weight: bold;
+        }
+
+        /* Spinner */
+        .loading-spinner-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            gap: 12px;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3.5px solid #ffeded;
+            border-top-color: var(--brand-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Tab Navigation Bar */
+        .tabs-navigation {
+            display: flex;
+            justify-content: center;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 40px;
+            gap: 15px;
+            position: sticky;
+            top: 67px;
+            z-index: 99;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
+        }
+
+        .tab-btn {
+            background: none;
+            border: 2px solid transparent;
+            color: var(--text-secondary);
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--brand-color);
+            background-color: var(--bg-base);
+        }
+
+        .tab-btn.active {
+            color: var(--brand-color);
+            background-color: #fff1f2;
+            border-color: #ffe4e6;
+        }
+
+        /* Category Filter Pills */
+        .category-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 22px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .filter-pill {
+            background-color: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: var(--text-secondary);
+            padding: 8px 18px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .filter-pill:hover {
+            background-color: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .filter-pill.active {
+            background-color: var(--brand-color);
+            border-color: var(--brand-color);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(226, 55, 68, 0.2);
+        }
+
+        /* Tab Content Pages */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: grid;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stats Dashboard Widgets */
+        .stats-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            width: 100%;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: 0 4px 18px rgba(28, 28, 28, 0.01);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .stat-card.spent::after {
+            background-color: #3b82f6;
+        }
+
+        .stat-card.orders::after {
+            background-color: var(--brand-color);
+        }
+
+        .stat-card.rate::after {
+            background-color: var(--color-success);
+        }
+
+        .stat-label {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-val {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.02em;
+        }
+
+        .stat-meta {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Helper styles for blank state in history/track */
+        .empty-state-box {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: var(--text-secondary);
+            margin-top: 20px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header Navigation Bar -->
+    <header>
+        <div class="logo-container" onclick="resetTracker()">
+            <div class="logo-icon-wrapper">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round" style="color: white;">
+                    <path d="M18 8.5A7 7 0 1 0 18 15.5" />
+                    <path d="M12 12h7m-3-2v4m3-4v4" />
+                </svg>
+            </div>
+            <div class="logo-text">
+                <h1>Mummy's Kitchen</h1>
+                <p>yummy food from mummy's hand</p>
+            </div>
+        </div>
+        <div class="header-meta">
+            <div class="broker-status">
+                <div class="status-dot"></div>
+                <span>ActiveMQ JMS Broker Connected</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Tab Navigation Bar -->
+    <div class="tabs-navigation">
+        <button class="tab-btn active" id="tab-btn-browse" onclick="switchTab('browse')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Browse Menu
+        </button>
+        <button class="tab-btn" id="tab-btn-track" onclick="switchTab('track')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Live Tracking
+        </button>
+        <button class="tab-btn" id="tab-btn-history" onclick="switchTab('history')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            History & Stats
+        </button>
+    </div>
+
+    <!-- Main Container -->
+    <main>
+
+        <!-- 1. BROWSE TAB CONTENT -->
+        <div id="tab-content-browse" class="tab-content active" style="grid-template-columns: 1.35fr 1fr; gap: 32px; width: 100%;">
+            <!-- Left Side: Order placement and Menu Catalog -->
+            <div class="section-left">
+                <div class="delivery-card">
+                    <h2 class="section-header">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                            stroke-linecap="round" stroke-linejoin="round" style="color: var(--brand-color);">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                        Confirm Delivery Details
+                    </h2>
+
+                    <div id="form-error" class="limit-alert-banner" style="display: none; margin-bottom: 20px;"></div>
+
+                    <form id="order-form">
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label for="customerName">Delivery Contact Name</label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                            <circle cx="12" cy="7" r="4" />
+                                        </svg>
+                                    </span>
+                                    <input type="text" id="customerName" placeholder="Jane Doe" required>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="deliveryAddress">Destination Address</label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z" />
+                                            <circle cx="12" cy="10" r="3" />
+                                        </svg>
+                                    </span>
+                                    <input type="text" id="deliveryAddress" placeholder="Apartment, Street Name, Area"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Catalog Items with Filters -->
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                                <h3 class="menu-title" style="margin-bottom: 0;">Indian Delicacies Selection</h3>
+                                <!-- Category Filter Pills -->
+                                <div class="category-filters" style="margin-bottom: 0;">
+                                    <button type="button" class="filter-pill active" id="pill-all" onclick="setCategoryFilter('all')">All</button>
+                                    <button type="button" class="filter-pill" id="pill-starters" onclick="setCategoryFilter('starters')">🥟 Starters</button>
+                                    <button type="button" class="filter-pill" id="pill-main" onclick="setCategoryFilter('main')">🍲 Main Course</button>
+                                    <button type="button" class="filter-pill" id="pill-sweet" onclick="setCategoryFilter('sweet')">🍨 Sweets & Drinks</button>
+                                </div>
+                            </div>
+                            <div class="menu-grid" id="menu-container"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Side: Cart Summary -->
+            <div class="section-right">
+                <!-- Cart empty prompt -->
+                <div class="empty-state-box" id="cart-empty-prompt" style="margin-top: 0;">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                    <h4 style="margin: 0; font-weight: 700; color: var(--text-main);">Your cart is empty</h4>
+                    <p style="margin: 0; font-size: 0.8rem; color: var(--text-secondary);">Select delicious items from the menu to populate your order.</p>
+                </div>
+
+                <!-- Cart details panel -->
+                <div class="cart-panel" id="cart-panel-block" style="display: none; margin-top: 0;">
+                    <h3 class="cart-title">Selected Items</h3>
+                    <div class="cart-list" id="cart-list-items"></div>
+
+                    <!-- Bill Structure -->
+                    <div class="bill-details">
+                        <div class="bill-header">Bill Summary</div>
+                        <div class="bill-row">
+                            <span>Items Subtotal</span>
+                            <span id="bill-subtotal">₹0.00</span>
+                        </div>
+                        <div class="bill-row">
+                            <span>Delivery Fee</span>
+                            <span>₹40.00</span>
+                        </div>
+                        <div class="bill-row">
+                            <span>Platform Handling Fee</span>
+                            <span>₹5.00</span>
+                        </div>
+                        <div class="bill-row grand-total">
+                            <span>Grand Total</span>
+                            <span id="bill-grand-total" class="grand-total-val">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <button type="button" class="checkout-btn" id="place-order-btn" onclick="submitOrder()">
+                        Confirm and Place Order
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. LIVE TRACKING TAB CONTENT -->
+        <div id="tab-content-track" class="tab-content" style="grid-template-columns: 1fr; width: 100%;">
+            <div id="no-active-order-prompt" class="empty-state-box" style="margin-top: 0;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><polyline points="12 6 12 12 16 14"/></svg>
+                <h4 style="margin: 0; font-weight: 700; color: var(--text-main);">No active order to track</h4>
+                <p style="margin: 0; font-size: 0.8rem; color: var(--text-secondary);">Place a new order under the "Browse Menu" tab to watch its status live.</p>
+            </div>
+
+            <!-- Live tracker card (hidden by default until order placed) -->
+            <div class="delivery-card tracker-card" id="active-tracker-block" style="display: none; width: 100%;">
+                <h2 class="section-header">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round" style="color: var(--brand-color);">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    Live Delivery Tracking
+                </h2>
+                <div id="tracker-body-wrapper" style="flex: 1; display: flex; flex-direction: column;">
+                    <!-- Trackers loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. HISTORY & STATS TAB CONTENT -->
+        <div id="tab-content-history" class="tab-content" style="grid-template-columns: 1fr; gap: 28px; width: 100%;">
+            <div class="stats-container">
+                <!-- Stats Dashboard Grid -->
+                <div class="stats-grid">
+                    <!-- Spent -->
+                    <div class="stat-card spent">
+                        <span class="stat-label">Total Money Spent</span>
+                        <span class="stat-val" id="stat-total-spent">₹0.00</span>
+                        <span class="stat-meta">Across all completed orders</span>
+                    </div>
+                    <!-- Orders -->
+                    <div class="stat-card orders">
+                        <span class="stat-label">Total Orders Placed</span>
+                        <span class="stat-val" id="stat-total-orders">0</span>
+                        <span class="stat-meta">Completed and cancelled total</span>
+                    </div>
+                    <!-- Success Rate -->
+                    <div class="stat-card rate">
+                        <span class="stat-label">Delivery Success Rate</span>
+                        <span class="stat-val" id="stat-success-rate">0%</span>
+                        <span class="stat-meta">Completed vs total closed</span>
+                    </div>
+                </div>
+
+                <!-- History list card -->
+                <div class="delivery-card history-card" style="width: 100%;">
+                    <h3 class="history-title" style="margin-bottom: 20px;">Recent Delivery Logs</h3>
+                    <div id="history-empty-prompt" class="empty-state-box" style="display: none; margin-top: 0; padding: 20px;">
+                        <p style="margin: 0; font-size: 0.8rem; color: var(--text-secondary);">No orders placed yet.</p>
+                    </div>
+                    <div class="history-list" id="history-logs-container">
+                        <!-- History entries loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const BACKEND_HOST = window.location.hostname || 'localhost';
+        const BASE_URL = `http://${BACKEND_HOST}:8081/api/orders`;
+
+        // Predefined Yummy-style Indian Menu with descriptions, prep times, Veg/Non-Veg classifications
+        const MENU_ITEMS = [
+            {
+                id: '1',
+                name: 'Paneer Butter Masala',
+                price: 240.00,
+                veg: true,
+                rating: '4.6',
+                time: '25 mins',
+                desc: 'Cubes of cottage cheese cooked in a rich, buttery, spiced tomato gravy with cream.',
+                image: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&q=80&w=200',
+                category: 'main'
+            },
+            {
+                id: '2',
+                name: 'Garlic Butter Naan',
+                price: 50.00,
+                veg: true,
+                rating: '4.7',
+                time: '15 mins',
+                desc: 'Soft, leavened tandoor flatbread brushed generously with fresh garlic paste and butter.',
+                image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&q=80&w=200',
+                category: 'starters'
+            },
+            {
+                id: '3',
+                name: 'Mutton Dum Biryani',
+                price: 340.00,
+                veg: false,
+                rating: '4.9',
+                time: '35 mins',
+                desc: 'Aromatic basmati rice layered with tender mutton marinated in rich spices and cooked on slow dum.',
+                image: 'https://images.unsplash.com/photo-1633945274405-b6c8069047b0?auto=format&fit=crop&q=80&w=200',
+                category: 'main'
+            },
+            {
+                id: '4',
+                name: 'Ginger Masala Chai',
+                price: 30.00,
+                veg: true,
+                rating: '4.5',
+                time: '10 mins',
+                desc: 'Traditional cutting chai brewed with fresh ginger, cardamom pods, and spices.',
+                image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&q=80&w=200',
+                category: 'sweet'
+            },
+            {
+                id: '5',
+                name: 'Royal Tandoori Platter',
+                price: 550.00,
+                veg: false,
+                rating: '4.8',
+                time: '30 mins',
+                desc: 'Assorted roasted kebabs, chicken tikka, and mutton chops marinated in yogurt and tandoori mix.',
+                image: 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&q=80&w=200',
+                category: 'starters'
+            },
+            {
+                id: '6',
+                name: 'Butter Chicken (Murgh Makhani)',
+                price: 320.00,
+                veg: false,
+                rating: '4.8',
+                time: '25 mins',
+                desc: 'Tender chicken pieces simmered in a creamy, velvety spiced tomato and butter sauce.',
+                image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&q=80&w=200',
+                category: 'main'
+            },
+            {
+                id: '7',
+                name: 'Crispy Vegetable Samosa',
+                price: 60.00,
+                veg: true,
+                rating: '4.6',
+                time: '12 mins',
+                desc: 'Flaky pastry stuffed with spiced potatoes, peas, and fresh coriander, served with mint chutney.',
+                image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&q=80&w=200',
+                category: 'starters'
+            },
+            {
+                id: '8',
+                name: 'Mango Lassi',
+                price: 80.00,
+                veg: true,
+                rating: '4.7',
+                time: '8 mins',
+                desc: 'Refreshing yogurt-based drink blended with sweet mango pulp, cardamom, and a touch of saffron.',
+                image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&q=80&w=200',
+                category: 'sweet'
+            },
+            {
+                id: '9',
+                name: 'Gulab Jamun',
+                price: 70.00,
+                veg: true,
+                rating: '4.9',
+                time: '10 mins',
+                desc: 'Soft, golden-fried milk-solid dumplings soaked in a warm, cardamom-infused sugar syrup.',
+                image: './gulab_jamun.jpg',
+                category: 'sweet'
+            }
+        ];
+
+        // State variables
+        let cart = [];
+        let activeOrderId = null;
+        let activeOrder = null;
+        let orderHistory = [];
+        let pollingInterval = null;
+        let activeTab = 'browse';
+        let activeCategory = 'all';
+
+        const menuContainer = document.getElementById('menu-container');
+        const cartPanelBlock = document.getElementById('cart-panel-block');
+        const cartListItems = document.getElementById('cart-list-items');
+        const billSubtotal = document.getElementById('bill-subtotal');
+        const billGrandTotal = document.getElementById('bill-grand-total');
+        const trackerBodyWrapper = document.getElementById('tracker-body-wrapper');
+        const historyLogsContainer = document.getElementById('history-logs-container');
+        const formError = document.getElementById('form-error');
+
+        // Initialize App
+        init();
+
+        // Initial setup function
+        function init() {
+            renderMenu();
+            loadHistory();
+            renderEmptyTracker();
+            checkConnectionStatus();
+            setInterval(checkConnectionStatus, 5000);
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            activeTab = tabName;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            const activeContent = document.getElementById(`tab-content-${tabName}`);
+            if (activeContent) activeContent.classList.add('active');
+
+            if (tabName === 'history') {
+                renderStats();
+            }
+        }
+
+        // Category filtering
+        function setCategoryFilter(categoryName) {
+            activeCategory = categoryName;
+
+            // Update filter pills active class
+            document.querySelectorAll('.filter-pill').forEach(pill => pill.classList.remove('active'));
+            const activePill = document.getElementById(`pill-${categoryName}`);
+            if (activePill) activePill.classList.add('active');
+
+            renderMenu();
+        }
+
+        // Check backend connection status
+        let checkConnectionFailures = 0;
+        async function checkConnectionStatus() {
+            const brokerStatusEl = document.querySelector('.broker-status');
+            const statusDotEl = document.querySelector('.status-dot');
+            const statusTextEl = brokerStatusEl.querySelector('span');
+
+            try {
+                // Ping the order-service
+                await fetch(`${BASE_URL}/health`, { method: 'GET' });
+                checkConnectionFailures = 0;
+                // Connection succeeds
+                brokerStatusEl.style.backgroundColor = '#e8f7ec';
+                brokerStatusEl.style.borderColor = '#d0ebd6';
+                brokerStatusEl.style.color = 'var(--color-success)';
+                statusDotEl.style.backgroundColor = 'var(--color-success)';
+                statusDotEl.style.boxShadow = '0 0 8px var(--color-success)';
+                statusTextEl.innerText = 'ActiveMQ JMS Broker Connected';
+            } catch (err) {
+                // Connection failed
+                checkConnectionFailures++;
+                if (checkConnectionFailures >= 3) {
+                    brokerStatusEl.style.backgroundColor = '#fff2f2';
+                    brokerStatusEl.style.borderColor = '#ffd1d1';
+                    brokerStatusEl.style.color = '#d93838';
+                    statusDotEl.style.backgroundColor = '#d93838';
+                    statusDotEl.style.boxShadow = '0 0 8px #d93838';
+                    statusTextEl.innerText = 'ActiveMQ JMS Broker Offline';
+                } else {
+                    statusTextEl.innerText = `Connecting... (Attempt ${checkConnectionFailures}/3)`;
+                }
+            }
+        }
+
+        // Render food dishes
+        function renderMenu() {
+            const filteredItems = activeCategory === 'all' 
+                ? MENU_ITEMS 
+                : MENU_ITEMS.filter(item => item.category === activeCategory);
+
+            if (filteredItems.length === 0) {
+                menuContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 40px 20px; font-style: italic;">No items found in this category.</p>`;
+                return;
+            }
+
+            menuContainer.innerHTML = filteredItems.map(item => `
+                <div class="food-card">
+                    <div class="food-info">
+                        <div class="food-badge ${item.veg ? 'veg' : 'non-veg'}">
+                            <div class="food-badge-dot"></div>
+                        </div>
+                        <div class="food-name">${item.name}</div>
+                        <div class="food-price">₹${item.price.toFixed(2)}</div>
+                        <div class="food-meta">
+                            <span class="rating-box">★ ${item.rating}</span>
+                            <span class="food-time">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                ${item.time}
+                            </span>
+                        </div>
+                        <div class="food-description">${item.desc}</div>
+                    </div>
+                    <div class="food-action-side">
+                        <img class="food-thumbnail" src="${item.image}" alt="${item.name}">
+                        <button type="button" class="add-action-btn" onclick="addToCart('${item.id}')">Add</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Cart Controllers
+        function addToCart(itemId) {
+            const item = MENU_ITEMS.find(i => i.id === itemId);
+            const existing = cart.find(c => c.id === itemId);
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({ ...item, quantity: 1 });
+            }
+            updateCart();
+        }
+
+        function updateQty(itemId, change) {
+            const item = cart.find(c => c.id === itemId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(c => c.id !== itemId);
+                }
+            }
+            updateCart();
+        }
+
+        function updateCart() {
+            const emptyPrompt = document.getElementById('cart-empty-prompt');
+            if (cart.length === 0) {
+                cartPanelBlock.style.display = 'none';
+                if (emptyPrompt) emptyPrompt.style.display = 'flex';
+                return;
+            }
+
+            if (emptyPrompt) emptyPrompt.style.display = 'none';
+            cartPanelBlock.style.display = 'block';
+
+            cartListItems.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div class="cart-item-title-side">
+                        <div class="food-badge ${item.veg ? 'veg' : 'non-veg'}" style="margin-bottom: 0;">
+                            <div class="food-badge-dot"></div>
+                        </div>
+                        <span class="cart-item-name">${item.name.split(' (')[0]}</span>
+                    </div>
+                    <div class="cart-controls">
+                        <div class="cart-item-qty-selector">
+                            <span class="cart-qty-btn" onclick="updateQty('${item.id}', -1)">−</span>
+                            <span class="cart-qty-val">${item.quantity}</span>
+                            <span class="cart-qty-btn" onclick="updateQty('${item.id}', 1)">+</span>
+                        </div>
+                        <span class="cart-item-price-side">₹${(item.price * item.quantity).toFixed(2)}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            const subtotal = cart.reduce((acc, c) => acc + (c.price * c.quantity), 0);
+            const deliveryFee = 40.00;
+            const platformFee = 5.00;
+            const grandTotal = subtotal + deliveryFee + platformFee;
+
+            billSubtotal.innerText = `₹${subtotal.toFixed(2)}`;
+            billGrandTotal.innerText = `₹${grandTotal.toFixed(2)}`;
+
+            billGrandTotal.classList.remove('limit-failed');
+        }
+
+        // Place order REST submission
+        async function submitOrder() {
+            formError.style.display = 'none';
+            const placeOrderBtn = document.getElementById('place-order-btn');
+
+            const customerName = document.getElementById('customerName').value.trim();
+            const deliveryAddress = document.getElementById('deliveryAddress').value.trim();
+
+            if (!customerName || !deliveryAddress) {
+                formError.innerText = 'Please enter your Contact Name and Destination Address.';
+                formError.style.display = 'flex';
+                document.getElementById('customerName').scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
+
+            placeOrderBtn.disabled = true;
+            placeOrderBtn.innerText = 'Routing to Saga orchestrator...';
+
+            const subtotal = cart.reduce((acc, c) => acc + (c.price * c.quantity), 0);
+            const deliveryFee = 40.00;
+            const platformFee = 5.00;
+            const finalCalculatedAmount = subtotal + deliveryFee + platformFee;
+
+            const payload = {
+                customerName: customerName,
+                deliveryAddress: deliveryAddress,
+                items: cart.map(c => ({
+                    itemName: c.name,
+                    quantity: c.quantity,
+                    price: c.price
+                }))
+            };
+
+            // Force price to include fees for the backend validation matching limit checks
+            payload.items.push({
+                itemName: "Delivery and Platform Fees",
+                quantity: 1,
+                price: deliveryFee + platformFee
+            });
+
+            try {
+                const response = await fetch(BASE_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errBody = await response.json().catch(() => ({}));
+                    throw new Error(errBody.message || 'REST endpoint error on port 8081');
+                }
+
+                const data = await response.json();
+
+                // Clear state
+                cart = [];
+                updateCart();
+                document.getElementById('customerName').value = '';
+                document.getElementById('deliveryAddress').value = '';
+
+                // Active tracker
+                startTracking(data.id);
+                saveHistoryEntry(data.id, data.customerName, finalCalculatedAmount);
+
+            } catch (err) {
+                console.error(err);
+                formError.innerText = err.message || 'Could not place order. Ensure Order Service is running on http://localhost:8081/';
+                formError.style.display = 'flex';
+            } finally {
+                placeOrderBtn.innerText = 'Confirm and Place Order';
+                placeOrderBtn.disabled = false;
+            }
+        }
+
+        // Poll logic
+        let consecutivePollFailures = 0;
+
+        function startTracking(orderId) {
+            activeOrderId = orderId;
+            // Keep activeOrder if it exists to prevent UI flickering during retries
+            renderLoadingTracker();
+
+            // Toggle active tracking blocks
+            const noActivePrompt = document.getElementById('no-active-order-prompt');
+            const activeTrackerBlock = document.getElementById('active-tracker-block');
+            if (noActivePrompt) noActivePrompt.style.display = 'none';
+            if (activeTrackerBlock) activeTrackerBlock.style.display = 'block';
+
+            // Auto switch to tracking tab!
+            switchTab('track');
+
+            if (pollingInterval) clearInterval(pollingInterval);
+
+            pollUpdate();
+            pollingInterval = setInterval(pollUpdate, 2000);
+        }
+
+        async function pollUpdate() {
+            if (!activeOrderId) return;
+            try {
+                const response = await fetch(`${BASE_URL}/${activeOrderId}`);
+                if (!response.ok) throw new Error('Status poll failed');
+                const data = await response.json();
+
+                consecutivePollFailures = 0;
+                activeOrder = data;
+                renderTracker();
+
+                if (data.status === 'DELIVERED' || data.status === 'CANCELLED') {
+                    clearInterval(pollingInterval);
+                    // Update stats values in history if needed
+                    updateHistoryStatus(data.id, data.status);
+                }
+            } catch (err) {
+                console.error(err);
+                consecutivePollFailures++;
+                if (consecutivePollFailures >= 5) {
+                    clearInterval(pollingInterval);
+                    trackerBodyWrapper.innerHTML = `
+                        <div class="empty-tracker">
+                            <div class="empty-tracker-svg" style="color: var(--brand-color); opacity: 0.8;">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            </div>
+                            <h4>Connection to backends lost</h4>
+                            <p>Verify order-service runs on port 8081</p>
+                            <button type="button" class="add-action-btn" style="margin-top: 15px; width: auto;" onclick="retryTracking(${activeOrderId})">Retry Connection</button>
+                        </div>
+                    `;
+                } else {
+                    const retryStatusEl = document.getElementById('retry-status-message');
+                    if (retryStatusEl) {
+                        retryStatusEl.innerText = `Network issue. Retrying... (Attempt ${consecutivePollFailures}/5)`;
+                        retryStatusEl.style.display = 'block';
+                    } else if (activeOrder) {
+                        renderTracker();
+                        const headerBox = document.querySelector('.tracker-header-box');
+                        if (headerBox) {
+                            const warningBanner = document.createElement('div');
+                            warningBanner.id = 'retry-status-message';
+                            warningBanner.style.backgroundColor = '#fff2f2';
+                            warningBanner.style.color = '#d93838';
+                            warningBanner.style.padding = '8px 12px';
+                            warningBanner.style.borderRadius = '8px';
+                            warningBanner.style.fontSize = '0.78rem';
+                            warningBanner.style.fontWeight = '600';
+                            warningBanner.style.marginTop = '10px';
+                            warningBanner.innerText = `Network issue. Retrying... (Attempt ${consecutivePollFailures}/5)`;
+                            headerBox.appendChild(warningBanner);
+                        }
+                    } else {
+                        trackerBodyWrapper.innerHTML = `
+                            <div class="loading-spinner-box">
+                                <div class="spinner"></div>
+                                <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.05em;">Reconnecting... (Attempt ${consecutivePollFailures}/5)</span>
+                            </div>
+                        `;
+                    }
+                }
+            }
+        }
+
+        function retryTracking(orderId) {
+            consecutivePollFailures = 0;
+            startTracking(orderId);
+        }
+
+        // Render Empty state
+        function renderEmptyTracker() {
+            trackerBodyWrapper.innerHTML = `
+                <div class="empty-tracker">
+                    <div class="empty-tracker-svg">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                    </div>
+                    <h4>No Active Deliveries</h4>
+                    <p>Enter delivery details and place an order to activate real-time timeline tracking.</p>
+                </div>
+            `;
+        }
+
+        // Render Loading
+        function renderLoadingTracker() {
+            trackerBodyWrapper.innerHTML = `
+                <div class="loading-spinner-box">
+                    <div class="spinner"></div>
+                    <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.05em;">Broadcasting Saga Event...</span>
+                </div>
+            `;
+        }
+
+        // Render Active Stepper
+        function renderTracker() {
+            if (!activeOrder) return;
+
+            const status = activeOrder.status;
+            const badgeClass = `badge-${status.toLowerCase()}`;
+
+            const steps = [
+                { name: 'PENDING', title: 'Order Confirmed', desc: 'Order received and logged. ActiveMQ broker has started the saga transaction.' },
+                { name: 'PAID', title: 'Payment Success', desc: status === 'CANCELLED' ? 'Simulated credit limit check failed. Order rejected.' : 'Payment processed successfully via credit card routing.' },
+                { name: 'PREPARING', title: 'Kitchen Preparing', desc: 'Kitchen chef has received the details. Preparing culinary items.' },
+                { name: 'DELIVERED', title: 'Out for Delivery', desc: 'Dispatched with delivery partner. Arrived at client location.' }
+            ];
+
+            const stepOrder = ['PENDING', 'PAID', 'PREPARING', 'DELIVERED'];
+
+            let activeStepIdx = -1;
+            if (status === 'PENDING') {
+                activeStepIdx = 1;
+            } else if (status === 'PAID') {
+                activeStepIdx = 2;
+            } else if (status === 'PREPARING') {
+                activeStepIdx = 3;
+            } else if (status === 'DELIVERED') {
+                activeStepIdx = -1;
+            }
+
+            const stepperHtml = steps.map(step => {
+                const stepName = step.name;
+                const targetIdx = stepOrder.indexOf(stepName);
+
+                let stepStatusClass = 'bubble-waiting';
+                let isLineCompleted = false;
+
+                if (status === 'CANCELLED') {
+                    stepStatusClass = stepName === 'PENDING' ? 'bubble-completed' : 'bubble-cancelled';
+                } else {
+                    if (status === 'DELIVERED' || targetIdx < activeStepIdx) {
+                        stepStatusClass = 'bubble-completed';
+                        isLineCompleted = true;
+                    } else if (targetIdx === activeStepIdx) {
+                        stepStatusClass = 'bubble-active';
+                    }
+                }
+
+                let isLineActive = false;
+                if (status !== 'CANCELLED' && status !== 'DELIVERED') {
+                    if (targetIdx === activeStepIdx - 1) {
+                        isLineActive = true;
+                    }
+                }
+
+                let iconSvg = '';
+                if (stepStatusClass === 'bubble-completed') {
+                    iconSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: white;"><polyline points="20 6 9 17 4 12"/></svg>`;
+                } else if (stepStatusClass === 'bubble-cancelled') {
+                    iconSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: white;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+                } else if (stepName === 'PENDING') {
+                    iconSvg = `<svg class="step-icon-pending" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
+                } else if (stepName === 'PAID') {
+                    iconSvg = `<svg class="step-icon-paid" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`;
+                } else if (stepName === 'PREPARING') {
+                    iconSvg = `<svg class="step-icon-preparing" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2M5 12h14M19 12a7 7 0 0 1-7 7M5 12a7 7 0 0 0 7 7"/></svg>`;
+                } else if (stepName === 'DELIVERED') {
+                    iconSvg = `<svg class="step-icon-delivered" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`;
+                }
+
+                const lineClass = isLineCompleted ? 'completed' : (isLineActive ? 'active-transit' : '');
+
+                return `
+                    <div class="timeline-step">
+                        <div class="timeline-line ${lineClass}"></div>
+                        <div class="step-bubble ${stepStatusClass}">${iconSvg}</div>
+                        <div class="step-details">
+                            <h4>${step.title}</h4>
+                            <p>${step.desc}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const rollbackHtml = status === 'CANCELLED' ? `
+                <div class="saga-rollback-banner">
+                    <div class="saga-rollback-header">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        Orchestrator Saga Rollback Execution
+                    </div>
+                    <p>The transaction was cancelled or failed, and the Camunda workflow process engine successfully completed compensation rollbacks across participants.</p>
+                </div>
+            ` : '';
+
+            trackerBodyWrapper.innerHTML = `
+                <div class="active-tracker">
+                    <div class="tracker-header-box">
+                        <div>
+                            <div class="tracker-ref-label">Yummy Order ID</div>
+                            <div class="tracker-order-id">Order #${activeOrder.id}</div>
+                            <div class="tracker-customer-name">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                Delivery to: ${activeOrder.customerName}
+                            </div>
+                        </div>
+                        <span class="status-badge ${badgeClass}">${status}</span>
+                    </div>
+
+                    <div class="tracker-stepper">
+                        ${stepperHtml}
+                    </div>
+
+                    ${rollbackHtml}
+
+                    <button type="button" class="btn-secondary" onclick="resetTracker()">
+                        Track a Different Delivery
+                    </button>
+                </div>
+            `;
+        }
+
+        function resetTracker() {
+            if (pollingInterval) clearInterval(pollingInterval);
+            activeOrderId = null;
+            activeOrder = null;
+            renderEmptyTracker();
+
+            const noActivePrompt = document.getElementById('no-active-order-prompt');
+            const activeTrackerBlock = document.getElementById('active-tracker-block');
+            if (noActivePrompt) noActivePrompt.style.display = 'flex';
+            if (activeTrackerBlock) activeTrackerBlock.style.display = 'none';
+
+            loadHistory();
+        }
+
+        // History Management
+        function loadHistory() {
+            const saved = localStorage.getItem('order_history');
+            if (saved) {
+                try {
+                    orderHistory = JSON.parse(saved);
+                } catch (e) {
+                    orderHistory = [];
+                }
+            }
+            renderHistory();
+            fetchFullHistoryDetails();
+        }
+
+        async function fetchFullHistoryDetails() {
+            let updated = false;
+            for (let i = 0; i < orderHistory.length; i++) {
+                const item = orderHistory[i];
+                if (!item.status || item.status === 'PENDING' || item.status === 'PAID' || item.status === 'PREPARING') {
+                    try {
+                        const res = await fetch(`${BASE_URL}/${item.id}`);
+                        if (res.ok) {
+                            const details = await res.json();
+                            orderHistory[i] = {
+                                ...item,
+                                status: details.status,
+                                amount: details.totalAmount || item.amount || 0
+                            };
+                            updated = true;
+                        }
+                    } catch (e) {
+                        console.error('Error fetching details for stats', e);
+                    }
+                }
+            }
+            if (updated) {
+                localStorage.setItem('order_history', JSON.stringify(orderHistory));
+                renderHistory();
+            }
+            renderStats();
+        }
+
+        function renderStats() {
+            let totalSpent = 0;
+            let totalOrders = orderHistory.length;
+            let completedCount = 0;
+            let closedCount = 0;
+
+            orderHistory.forEach(h => {
+                const amount = h.amount || 0;
+                if (h.status === 'DELIVERED') {
+                    totalSpent += amount;
+                    completedCount++;
+                    closedCount++;
+                } else if (h.status === 'CANCELLED') {
+                    closedCount++;
+                }
+            });
+
+            const successRate = closedCount > 0 ? Math.round((completedCount / closedCount) * 100) : 0;
+
+            const spentEl = document.getElementById('stat-total-spent');
+            const ordersEl = document.getElementById('stat-total-orders');
+            const rateEl = document.getElementById('stat-success-rate');
+
+            if (spentEl) spentEl.innerText = `₹${totalSpent.toFixed(2)}`;
+            if (ordersEl) ordersEl.innerText = totalOrders;
+            if (rateEl) rateEl.innerText = `${successRate}%`;
+
+            const emptyPrompt = document.getElementById('history-empty-prompt');
+            if (totalOrders === 0) {
+                if (emptyPrompt) emptyPrompt.style.display = 'block';
+            } else {
+                if (emptyPrompt) emptyPrompt.style.display = 'none';
+            }
+        }
+
+        // Render history entries list
+        function renderHistory() {
+            if (orderHistory.length === 0) {
+                historyLogsContainer.innerHTML = `<p style="margin: 0; font-size: 0.78rem; color: var(--text-secondary); font-style: italic; text-align: center; padding: 20px;">No recent delivery logs recorded.</p>`;
+                return;
+            }
+
+            historyLogsContainer.innerHTML = orderHistory.map(h => {
+                const statusBadge = h.status 
+                    ? `<span class="status-badge badge-${h.status.toLowerCase()}" style="font-size: 0.65rem; padding: 3px 8px; margin-left: 8px;">${h.status}</span>`
+                    : '';
+                const priceLabel = h.amount 
+                    ? `<span style="font-size: 0.8rem; font-weight: 700; color: var(--text-main); margin-left: auto; margin-right: 12px;">₹${h.amount.toFixed(2)}</span>`
+                    : '';
+                return `
+                    <div class="history-item ${activeOrderId === h.id ? 'active' : ''}" onclick="startTracking(${h.id})" style="display: flex; align-items: center; width: 100%;">
+                        <div class="history-item-info" style="flex: 1;">
+                            <h5 style="display: flex; align-items: center; margin: 0; font-size: 0.85rem; font-weight: 700;">Order #${h.id} ${statusBadge}</h5>
+                            <p style="margin: 3px 0 0 0; font-size: 0.72rem; color: var(--text-secondary);">${h.customer} • ${h.time}</p>
+                        </div>
+                        ${priceLabel}
+                        <span class="history-chevron">→</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function saveHistoryEntry(orderId, customer, amount) {
+            const entry = { id: orderId, customer, time: new Date().toLocaleTimeString(), amount, status: 'PENDING' };
+            orderHistory = [entry, ...orderHistory.filter(h => h.id !== orderId)].slice(0, 10);
+            localStorage.setItem('order_history', JSON.stringify(orderHistory));
+            renderHistory();
+            renderStats();
+        }
+
+        function updateHistoryStatus(orderId, status) {
+            let updated = false;
+            orderHistory = orderHistory.map(h => {
+                if (h.id === orderId) {
+                    updated = true;
+                    return { ...h, status };
+                }
+                return h;
+            });
+            if (updated) {
+                localStorage.setItem('order_history', JSON.stringify(orderHistory));
+                renderHistory();
+                renderStats();
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_1"
+                  targetNamespace="http://bpmn.io/schema/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.20.0">
+
+  <!-- Message Definitions for Asynchronous Callbacks -->
+  <bpmn:message id="paymentResponseReceivedMessage" name="PaymentResponseReceived" />
+  <bpmn:message id="kitchenResponseReceivedMessage" name="KitchenResponseReceived" />
+  <bpmn:message id="deliveryResponseReceivedMessage" name="DeliveryResponseReceived" />
+
+  <!-- Process Definition -->
+  <bpmn:process id="order-processing-saga" name="Order Processing Saga" isExecutable="true">
+    
+    <!-- Start Event -->
+    <bpmn:startEvent id="startEvent" name="Order Received">
+      <bpmn:outgoing>flow1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- Request Payment Service Task -->
+    <bpmn:serviceTask id="requestPaymentTask" name="Request Payment" camunda:delegateExpression="${requestPaymentDelegate}">
+      <bpmn:incoming>flow1</bpmn:incoming>
+      <bpmn:outgoing>flow2</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Receive Payment Response Receive Task -->
+    <bpmn:receiveTask id="receivePaymentResponseTask" name="Wait for Payment Response" messageRef="paymentResponseReceivedMessage">
+      <bpmn:incoming>flow2</bpmn:incoming>
+      <bpmn:outgoing>flow3</bpmn:outgoing>
+    </bpmn:receiveTask>
+
+    <!-- Exclusive Gateway (Check Payment Status) -->
+    <bpmn:exclusiveGateway id="paymentStatusGateway" name="Payment Successful?">
+      <bpmn:incoming>flow3</bpmn:incoming>
+      <bpmn:outgoing>flowPaymentSuccess</bpmn:outgoing>
+      <bpmn:outgoing>flowPaymentFailed</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Cancel Order Task -->
+    <bpmn:serviceTask id="cancelOrderTask" name="Cancel Order" camunda:delegateExpression="${cancelOrderDelegate}">
+      <bpmn:incoming>flowPaymentFailed</bpmn:incoming>
+      <bpmn:outgoing>flow4</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Cancel End Event -->
+    <bpmn:endEvent id="cancelledEndEvent" name="Order Cancelled">
+      <bpmn:incoming>flow4</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Request Kitchen Service Task -->
+    <bpmn:serviceTask id="requestKitchenTask" name="Request Kitchen" camunda:delegateExpression="${requestKitchenDelegate}">
+      <bpmn:incoming>flowPaymentSuccess</bpmn:incoming>
+      <bpmn:outgoing>flow5</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Receive Kitchen Response Receive Task -->
+    <bpmn:receiveTask id="receiveKitchenResponseTask" name="Wait for Kitchen Response" messageRef="kitchenResponseReceivedMessage">
+      <bpmn:incoming>flow5</bpmn:incoming>
+      <bpmn:outgoing>flow6</bpmn:outgoing>
+    </bpmn:receiveTask>
+
+    <!-- Request Delivery Service Task -->
+    <bpmn:serviceTask id="requestDeliveryTask" name="Request Delivery" camunda:delegateExpression="${requestDeliveryDelegate}">
+      <bpmn:incoming>flow6</bpmn:incoming>
+      <bpmn:outgoing>flow7</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Receive Delivery Response Receive Task -->
+    <bpmn:receiveTask id="receiveDeliveryResponseTask" name="Wait for Delivery Response" messageRef="deliveryResponseReceivedMessage">
+      <bpmn:incoming>flow7</bpmn:incoming>
+      <bpmn:outgoing>flow8</bpmn:outgoing>
+    </bpmn:receiveTask>
+
+    <!-- Complete Order Service Task -->
+    <bpmn:serviceTask id="completeOrderTask" name="Complete Order" camunda:delegateExpression="${completeOrderDelegate}">
+      <bpmn:incoming>flow8</bpmn:incoming>
+      <bpmn:outgoing>flow9</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Complete End Event -->
+    <bpmn:endEvent id="completedEndEvent" name="Order Completed">
+      <bpmn:incoming>flow9</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="flow1" sourceRef="startEvent" targetRef="requestPaymentTask" />
+    <bpmn:sequenceFlow id="flow2" sourceRef="requestPaymentTask" targetRef="receivePaymentResponseTask" />
+    <bpmn:sequenceFlow id="flow3" sourceRef="receivePaymentResponseTask" targetRef="paymentStatusGateway" />
+    
+    <!-- Conditional Sequences -->
+    <bpmn:sequenceFlow id="flowPaymentFailed" name="No" sourceRef="paymentStatusGateway" targetRef="cancelOrderTask">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${paymentStatus == 'FAILED'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flowPaymentSuccess" name="Yes" sourceRef="paymentStatusGateway" targetRef="requestKitchenTask">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${paymentStatus == 'SUCCESS'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="flow4" sourceRef="cancelOrderTask" targetRef="cancelledEndEvent" />
+    <bpmn:sequenceFlow id="flow5" sourceRef="requestKitchenTask" targetRef="receiveKitchenResponseTask" />
+    <bpmn:sequenceFlow id="flow6" sourceRef="receiveKitchenResponseTask" targetRef="requestDeliveryTask" />
+    <bpmn:sequenceFlow id="flow7" sourceRef="requestDeliveryTask" targetRef="receiveDeliveryResponseTask" />
+    <bpmn:sequenceFlow id="flow8" sourceRef="receiveDeliveryResponseTask" targetRef="completeOrderTask" />
+    <bpmn:sequenceFlow id="flow9" sourceRef="completeOrderTask" targetRef="completedEndEvent" />
+
+  </bpmn:process>
+
+  <!-- Diagram Visual Elements -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="order-processing-saga">
+      
+      <!-- Start Event Shape -->
+      <bpmndi:BPMNShape id="_BPMNShape_startEvent" bpmnElement="startEvent">
+        <dc:Bounds x="152" y="159" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="134" y="202" width="73" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Request Payment Task Shape -->
+      <bpmndi:BPMNShape id="requestPaymentTask_di" bpmnElement="requestPaymentTask">
+        <dc:Bounds x="240" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Receive Payment Response Shape -->
+      <bpmndi:BPMNShape id="receivePaymentResponseTask_di" bpmnElement="receivePaymentResponseTask">
+        <dc:Bounds x="380" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Exclusive Gateway Shape -->
+      <bpmndi:BPMNShape id="paymentStatusGateway_di" bpmnElement="paymentStatusGateway" isMarkerVisible="true">
+        <dc:Bounds x="525" y="152" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="520" y="115" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Request Kitchen Task Shape -->
+      <bpmndi:BPMNShape id="requestKitchenTask_di" bpmnElement="requestKitchenTask">
+        <dc:Bounds x="640" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Receive Kitchen Response Shape -->
+      <bpmndi:BPMNShape id="receiveKitchenResponseTask_di" bpmnElement="receiveKitchenResponseTask">
+        <dc:Bounds x="780" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Request Delivery Task Shape -->
+      <bpmndi:BPMNShape id="requestDeliveryTask_di" bpmnElement="requestDeliveryTask">
+        <dc:Bounds x="920" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Receive Delivery Response Shape -->
+      <bpmndi:BPMNShape id="receiveDeliveryResponseTask_di" bpmnElement="receiveDeliveryResponseTask">
+        <dc:Bounds x="1060" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Complete Order Task Shape -->
+      <bpmndi:BPMNShape id="completeOrderTask_di" bpmnElement="completeOrderTask">
+        <dc:Bounds x="1200" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Completed End Event Shape -->
+      <bpmndi:BPMNShape id="completedEndEvent_di" bpmnElement="completedEndEvent">
+        <dc:Bounds x="1342" y="159" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1319" y="202" width="83" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Cancel Order Task Shape -->
+      <bpmndi:BPMNShape id="cancelOrderTask_di" bpmnElement="cancelOrderTask">
+        <dc:Bounds x="500" y="270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Cancelled End Event Shape -->
+      <bpmndi:BPMNShape id="cancelledEndEvent_di" bpmnElement="cancelledEndEvent">
+        <dc:Bounds x="532" y="382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="511" y="425" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Edges / Connections -->
+      <bpmndi:BPMNEdge id="flow1_di" bpmnElement="flow1">
+        <di:waypoint x="188" y="177" />
+        <di:waypoint x="240" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow2_di" bpmnElement="flow2">
+        <di:waypoint x="340" y="177" />
+        <di:waypoint x="380" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow3_di" bpmnElement="flow3">
+        <di:waypoint x="480" y="177" />
+        <di:waypoint x="525" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flowPaymentSuccess_di" bpmnElement="flowPaymentSuccess">
+        <di:waypoint x="575" y="177" />
+        <di:waypoint x="640" y="177" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="599" y="159" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flowPaymentFailed_di" bpmnElement="flowPaymentFailed">
+        <di:waypoint x="550" y="202" />
+        <di:waypoint x="550" y="270" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="558" y="229" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow4_di" bpmnElement="flow4">
+        <di:waypoint x="550" y="350" />
+        <di:waypoint x="550" y="382" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow5_di" bpmnElement="flow5">
+        <di:waypoint x="740" y="177" />
+        <di:waypoint x="780" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow6_di" bpmnElement="flow6">
+        <di:waypoint x="880" y="177" />
+        <di:waypoint x="920" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow7_di" bpmnElement="flow7">
+        <di:waypoint x="1020" y="177" />
+        <di:waypoint x="1060" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow8_di" bpmnElement="flow8">
+        <di:waypoint x="1160" y="177" />
+        <di:waypoint x="1200" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="flow9_di" bpmnElement="flow9">
+        <di:waypoint x="1300" y="177" />
+        <di:waypoint x="1342" y="177" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>
