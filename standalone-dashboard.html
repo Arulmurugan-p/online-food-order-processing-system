@@ -1583,8 +1583,8 @@
             if (isLocal) {
                 return `http://${hostname}:8081/api/orders`;
             }
-            // Public HTTPS secure tunnel mapping to local PC backend
-            return 'https://fb3508d78696bd.lhr.life/api/orders';
+            // Public HTTPS secure tunnel mapping to local PC backend (stable subdomain)
+            return 'https://gourmetflow-backend-arul.loca.lt/api/orders';
         };
         const BASE_URL = getBaseUrl();
 
@@ -1785,7 +1785,10 @@
 
             try {
                 // Ping the order-service
-                await fetch(`${BASE_URL}/health`, { method: 'GET' });
+                await fetch(`${BASE_URL}/health`, { 
+                    method: 'GET',
+                    headers: { 'Bypass-Tunnel-Reminder': 'true' }
+                });
                 checkConnectionFailures = 0;
                 // Connection succeeds
                 brokerStatusEl.style.backgroundColor = '#e8f7ec';
@@ -1953,7 +1956,10 @@
             try {
                 const response = await fetch(BASE_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Bypass-Tunnel-Reminder': 'true'
+                    },
                     body: JSON.stringify(payload)
                 });
 
@@ -2010,7 +2016,9 @@
         async function pollUpdate() {
             if (!activeOrderId) return;
             try {
-                const response = await fetch(`${BASE_URL}/${activeOrderId}`);
+                const response = await fetch(`${BASE_URL}/${activeOrderId}`, {
+                    headers: { 'Bypass-Tunnel-Reminder': 'true' }
+                });
                 if (!response.ok) throw new Error('Status poll failed');
                 const data = await response.json();
 
@@ -2251,7 +2259,9 @@
                 const item = orderHistory[i];
                 if (!item.status || item.status === 'PENDING' || item.status === 'PAID' || item.status === 'PREPARING') {
                     try {
-                        const res = await fetch(`${BASE_URL}/${item.id}`);
+                        const res = await fetch(`${BASE_URL}/${item.id}`, {
+                            headers: { 'Bypass-Tunnel-Reminder': 'true' }
+                        });
                         if (res.ok) {
                             const details = await res.json();
                             orderHistory[i] = {
