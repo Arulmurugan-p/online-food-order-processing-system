@@ -1,4 +1,14 @@
-const BACKEND_HOST = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+const getBackendHost = () => {
+  if (typeof window === 'undefined') return 'localhost';
+  const hostname = window.location.hostname;
+  const isLocal = hostname === 'localhost' || 
+                  hostname === '127.0.0.1' || 
+                  /^192\.168\./.test(hostname) || 
+                  /^10\./.test(hostname) || 
+                  /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname);
+  return isLocal ? hostname : 'localhost';
+};
+const BACKEND_HOST = getBackendHost();
 const BASE_URL = `http://${BACKEND_HOST}:8081/api/orders`;
 
 /**

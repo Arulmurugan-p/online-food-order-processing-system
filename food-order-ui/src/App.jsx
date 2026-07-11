@@ -59,20 +59,36 @@ function App() {
     }
   }, [])
 
-  const [isBackendConnected, setIsBackendConnected] = useState(false)
-
+  const [connectionStatus, setConnectionStatus] = useState('connecting') // 'connected', 'offline', 'mixed-content'
+ 
   // Dynamic Backend / ActiveMQ Connection Check
   useEffect(() => {
     const checkConnection = async () => {
+      const getBackendHost = () => {
+        if (typeof window === 'undefined') return 'localhost';
+        const hostname = window.location.hostname;
+        const isLocal = hostname === 'localhost' || 
+                        hostname === '127.0.0.1' || 
+                        /^192\.168\./.test(hostname) || 
+                        /^10\./.test(hostname) || 
+                        /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname);
+        return isLocal ? hostname : 'localhost';
+      };
+      const host = getBackendHost();
+ 
+      if (window.location.protocol === 'https:' && (host === 'localhost' || host === '127.0.0.1' || /^192\.168\./.test(host) || /^10\./.test(host) || /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host))) {
+        setConnectionStatus('mixed-content')
+        return
+      }
+ 
       try {
-        const backendHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-        await fetch(`http://${backendHost}:8081/api/orders/health`)
-        setIsBackendConnected(true)
+        await fetch(`http://${host}:8081/api/orders/health`)
+        setConnectionStatus('connected')
       } catch (e) {
-        setIsBackendConnected(false)
+        setConnectionStatus('offline')
       }
     }
-
+ 
     checkConnection()
     const interval = setInterval(checkConnection, 5000)
     return () => clearInterval(interval)
@@ -256,9 +272,15 @@ function App() {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Activity size={16} color={isBackendConnected ? "#10b981" : "#f87171"} />
-          <span style={{ fontSize: '0.85rem', color: isBackendConnected ? "#10b981" : "#f87171", fontWeight: 600 }}>
-            {isBackendConnected ? "ActiveMQ Connected" : "ActiveMQ Offline"}
+          <Activity size={16} color={connectionStatus === 'connected' ? "#10b981" : connectionStatus === 'mixed-content' ? "#eab308" : "#f87171"} />
+          <span style={{ fontSize: '0.85rem', color: connectionStatus === 'connected' ? "#10b981" : connectionStatus === 'mixed-content' ? "#eab308" : "#f87171", fontWeight: 600 }}>
+            {connectionStatus === 'connected' && "ActiveMQ Connected"}
+            {connectionStatus === 'offline' && "ActiveMQ Offline"}
+            {connectionStatus === 'mixed-content' && (
+              <span>
+                HTTPS Block: Use <a href="http://127.0.0.1:5500/standalone-dashboard.html" style={{ textDecoration: 'underline', color: 'inherit' }}>HTTP Link</a>
+              </span>
+            )}
           </span>
         </div>
       </header>

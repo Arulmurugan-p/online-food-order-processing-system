@@ -1569,7 +1569,17 @@
     </main>
 
     <script>
-        const BACKEND_HOST = window.location.hostname || 'localhost';
+        // Default to localhost if hosted on a public domain, keeping local backend connection intact
+        const getBackendHost = () => {
+            const hostname = window.location.hostname;
+            const isLocal = hostname === 'localhost' || 
+                            hostname === '127.0.0.1' || 
+                            /^192\.168\./.test(hostname) || 
+                            /^10\./.test(hostname) || 
+                            /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname);
+            return isLocal ? hostname : 'localhost';
+        };
+        const BACKEND_HOST = getBackendHost();
         const BASE_URL = `http://${BACKEND_HOST}:8081/api/orders`;
 
         // Predefined Yummy-style Indian Menu with descriptions, prep times, Veg/Non-Veg classifications
@@ -1742,6 +1752,18 @@
             const brokerStatusEl = document.querySelector('.broker-status');
             const statusDotEl = document.querySelector('.status-dot');
             const statusTextEl = brokerStatusEl.querySelector('span');
+
+            // Detect browser HTTPS Mixed Content security blocks for local backend connection
+            const host = BACKEND_HOST;
+            if (window.location.protocol === 'https:' && (host === 'localhost' || host === '127.0.0.1' || /^192\.168\./.test(host) || /^10\./.test(host) || /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host))) {
+                brokerStatusEl.style.backgroundColor = '#fff9e6';
+                brokerStatusEl.style.borderColor = '#ffeeba';
+                brokerStatusEl.style.color = '#856404';
+                statusDotEl.style.backgroundColor = '#ffc107';
+                statusDotEl.style.boxShadow = '0 0 8px #ffc107';
+                statusTextEl.innerHTML = 'HTTPS Security Block: Please use the local HTTP link (e.g. <a href="http://127.0.0.1:5500/standalone-dashboard.html" style="color: inherit; font-weight: 700; text-decoration: underline;">http://127.0.0.1:5500</a>) to connect';
+                return;
+            }
 
             try {
                 // Ping the order-service
